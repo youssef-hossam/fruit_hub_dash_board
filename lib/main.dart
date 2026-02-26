@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:fruit_hub_dash_board/fruit_hub_dash_board_app.dart';
+import 'package:fruit_hub_dash_board/app.dart';
 
 void main() {
   runApp(FruitHubDashboard());
-  // just for test ui  of source control ui at vs code
 }
