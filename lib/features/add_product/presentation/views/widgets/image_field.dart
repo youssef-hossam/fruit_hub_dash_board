@@ -18,30 +18,56 @@ class _ImageFieldState extends State<ImageField> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () async {
-        await pickUpImage();
-        if (imageFile != null) widget.onImageSelected(imageFile!);
-        setState(() {});
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey),
-          borderRadius: BorderRadius.circular(8),
+    return Stack(
+      children: [
+        GestureDetector(
+          onTap: () async {
+            await pickUpImage();
+            if (imageFile != null) widget.onImageSelected(imageFile!);
+            setState(() {});
+          },
+          child: Container(
+            height: 200.h,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(8),
+            ),
+
+            child: imageFile != null
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.file(
+                      imageFile!,
+                      height: 200.h,
+                      // width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                : Icon(Icons.image_outlined, size: 200.sp),
+          ),
         ),
 
-        child: imageFile != null
-            ? ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.file(
-                  imageFile!,
-                  height: 200.h,
-                  // width: double.infinity,
-                  fit: BoxFit.cover,
+        if (imageFile != null)
+          Positioned(
+            top: 8,
+            right: 8,
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  imageFile = null;
+                });
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black54,
+                  shape: BoxShape.circle,
                 ),
-              )
-            : Icon(Icons.image_outlined, size: 200.sp),
-      ),
+                child: Icon(Icons.close, color: Colors.white, size: 20.sp),
+              ),
+            ),
+          ),
+      ],
     );
   }
 

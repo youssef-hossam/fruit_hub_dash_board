@@ -16,7 +16,7 @@ class DashBoardView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CustomButton(
-              onPress: () =>
+              onPressed: () =>
                   Navigator.pushNamed(context, AddProductView.routeName),
               text: 'Add Product',
             ),

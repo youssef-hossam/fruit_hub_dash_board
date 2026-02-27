@@ -4,9 +4,9 @@ import 'package:fruit_hub_dash_board/core/utils/app_colors.dart';
 import 'package:fruit_hub_dash_board/core/utils/app_styles.dart';
 
 class CustomButton extends StatelessWidget {
-  const CustomButton({super.key, required this.onPress, required this.text});
+  const CustomButton({super.key, required this.onPressed, required this.text});
   final String text;
-  final VoidCallback? onPress;
+  final Function()? onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,7 @@ class CustomButton extends StatelessWidget {
       height: 54.h,
       width: double.infinity,
       child: TextButton(
-        onPressed: onPress,
+        onPressed: onPressed,
         style: TextButton.styleFrom(
           backgroundColor: AppColors.green1500,
           shape: RoundedRectangleBorder(

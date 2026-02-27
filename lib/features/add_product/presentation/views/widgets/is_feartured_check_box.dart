@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fruit_hub_dash_board/core/utils/app_colors.dart';
 
 class IsFearturedCheckBox extends StatefulWidget {
   final ValueChanged<bool> onChanged;
@@ -14,6 +15,8 @@ class _IsFearturedCheckBoxState extends State<IsFearturedCheckBox> {
   @override
   Widget build(BuildContext context) {
     return Checkbox(
+      hoverColor: AppColors.green1500,
+      activeColor: AppColors.green1500,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
       value: isFeatured,
       onChanged: (value) {
