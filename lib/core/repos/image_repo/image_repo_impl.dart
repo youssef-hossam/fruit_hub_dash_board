@@ -11,7 +11,7 @@ class ImageRepoImpl implements ImageRepo {
   @override
   Future<Either<Failure, String>> uploadImage(File image) async {
     try {
-      final result = await storageService.uploadImage(image.path);
+      final result = await storageService.uploadImage(image, 'images/products');
 
       return Right(result);
     } catch (e) {
