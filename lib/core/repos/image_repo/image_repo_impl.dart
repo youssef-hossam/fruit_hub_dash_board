@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:fruit_hub_dash_board/core/errors/failures.dart';
@@ -15,6 +16,7 @@ class ImageRepoImpl implements ImageRepo {
 
       return Right(result);
     } catch (e) {
+      log('Error uploading image: ${e.toString()}');
       return Left(ServerFailure(' Failed to upload image: ${e.toString()}'));
     }
   }

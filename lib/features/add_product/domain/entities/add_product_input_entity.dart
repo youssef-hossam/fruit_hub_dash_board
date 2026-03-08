@@ -7,7 +7,7 @@ class AddProductInputEntity {
   final int quantity;
   final bool isFeatured;
   final File image;
-  final String imagePath;
+  String imageUrl;
 
   AddProductInputEntity({
     required this.name,
@@ -16,6 +16,6 @@ class AddProductInputEntity {
     required this.quantity,
     required this.isFeatured,
     required this.image,
-    required this.imagePath,
+    this.imageUrl = '',
   });
 }

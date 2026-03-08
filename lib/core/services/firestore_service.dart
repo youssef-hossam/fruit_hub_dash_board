@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fruit_hub_dash_board/core/services/database_service.dart';
 
-class FirestoreService implements DatabaseService {
+class FirebaseFirestoreService implements DatabaseService {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   @override
   addData({
