@@ -1,47 +1,30 @@
-import 'dart:io';
 
-import 'package:bloc/bloc.dart';
-import 'package:dartz/dartz.dart';
-import 'package:fruit_hub_dash_board/core/errors/failures.dart';
-import 'package:fruit_hub_dash_board/core/repos/image_repo/image_repo.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fruit_hub_dash_board/core/entities/product_entity.dart';
 import 'package:fruit_hub_dash_board/core/repos/product_repo/product_repo.dart';
-import 'package:fruit_hub_dash_board/features/add_product/domain/entities/add_product_input_entity.dart';
-import 'package:meta/meta.dart';
 
 part 'add_product_state.dart';
 
+/// Saves the product form: uploads the picked image (if any) and then adds a
+/// new product or updates the existing one.
 class AddProductCubit extends Cubit<AddProductState> {
-  final ImageRepo imageRepo;
   final ProductRepo productRepo;
 
-  AddProductCubit({required this.imageRepo, required this.productRepo})
-    : super(AddProductInitial());
+  AddProductCubit({required this.productRepo}) : super(AddProductInitial());
 
-  Future<void> addProduct(AddProductInputEntity addProductInputEntity) async {
+  Future<void> save({
+    required ProductEntity product,
+    required bool isEdit,
+    ({Uint8List bytes, String name})? image,
+  }) async {
     emit(AddProductLoading());
-    Either<Failure, String> result = await imageRepo.uploadImage(
-      addProductInputEntity.image,
-    );
+    final result = isEdit
+        ? await productRepo.updateProduct(product: product, image: image)
+        : await productRepo.addProduct(product: product, image: image);
     result.fold(
-      (f) {
-        emit(AddProductFailure(f.message));
-      },
-      (url) async {
-        addProductInputEntity.imageUrl = url;
-        Either<Failure, void> addProductResult = await productRepo.addProduct(
-          addProductInputEntity: addProductInputEntity,
-        );
-        addProductResult.fold(
-          (f) {
-            emit(AddProductFailure(f.message));
-          },
-          (_) {
-            emit(AddProductSuccess());
-          },
-        );
-      },
+      (f) => emit(AddProductFailure(f.message)),
+      (saved) => emit(AddProductSuccess(saved)),
     );
-
-    // productRepo.addProduct(addProductInputEntity: addProductInputEntity);
   }
 }

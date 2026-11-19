@@ -1,5 +1,10 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 abstract class StorageService {
-  Future<String> uploadImage(File file, String path);
+  /// Uploads [bytes] under [path] and returns the public URL of the file.
+  Future<String> uploadImage({
+    required Uint8List bytes,
+    required String fileName,
+    required String path,
+  });
 }

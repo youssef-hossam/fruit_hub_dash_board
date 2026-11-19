@@ -1,29 +1,68 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:fruit_hub_dash_board/app.dart';
+import 'package:fruit_hub_dash_board/core/entities/order_entity.dart';
+import 'package:fruit_hub_dash_board/core/entities/product_entity.dart';
+import 'package:fruit_hub_dash_board/core/models/order_model.dart';
+import 'package:fruit_hub_dash_board/core/models/product_model.dart';
+import 'package:fruit_hub_dash_board/core/demo/demo_data.dart';
+import 'package:fruit_hub_dash_board/features/dash_board/domain/dashboard_stats.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const FruitHubDashboard());
+  final now = DateTime(2026, 11, 19, 15);
+  final products = demoProducts.map(ProductModel.fromJson).toList();
+  final orders = demoOrders(now).map(OrderModel.fromJson).toList();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  test('product json round-trip keeps every field the client reads', () {
+    final p = products.first;
+    final back = ProductModel.fromJson(ProductModel.toJson(p));
+    expect(back.name, p.name);
+    expect(back.nameEn, p.nameEn);
+    expect(back.oldPrice, p.oldPrice);
+    expect(back.reviews.length, p.reviews.length);
+    expect(back.quantity, p.quantity);
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  test('revenue ignores cancelled orders', () {
+    final stats = DashboardStats.from(
+      products: products,
+      orders: orders,
+      now: now,
+    );
+    final expected = orders
+        .where((o) => o.status != OrderStatus.cancelled)
+        .fold<double>(0, (s, o) => s + o.total);
+    expect(stats.revenue, expected);
+    expect(stats.ordersCount, orders.length);
+    expect(stats.last7Days.length, 7);
+    expect(stats.bestSellers.first.sellingCount,
+        greaterThanOrEqualTo(stats.bestSellers.last.sellingCount));
+  });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  test('order status flow', () {
+    expect(OrderStatus.pending.next, OrderStatus.preparing);
+    expect(OrderStatus.onTheWay.next, OrderStatus.delivered);
+    expect(OrderStatus.delivered.next, isNull);
+    expect(OrderStatus.cancelled.isOpen, isFalse);
+  });
+
+  test('discount percent', () {
+    const p = ProductEntity(
+      id: 'x',
+      name: 'x',
+      nameEn: 'x',
+      code: 'x',
+      description: '',
+      descriptionEn: '',
+      price: 75,
+      oldPrice: 100,
+      category: 'fruits',
+      imageUrl: '',
+      isFeatured: false,
+      isOrganic: false,
+      expirationMonths: 1,
+      numberOfCalories: 1,
+      quantity: 5,
+    );
+    expect(p.discountPercent, 25);
+    expect(p.isLowStock, isTrue);
   });
 }

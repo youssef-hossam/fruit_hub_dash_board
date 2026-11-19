@@ -1,31 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fruit_hub_dash_board/core/repos/image_repo/image_repo.dart';
+import 'package:fruit_hub_dash_board/core/entities/product_entity.dart';
 import 'package:fruit_hub_dash_board/core/repos/product_repo/product_repo.dart';
 import 'package:fruit_hub_dash_board/core/services/get_it_service.dart';
+import 'package:fruit_hub_dash_board/core/utils/app_styles.dart';
 import 'package:fruit_hub_dash_board/features/add_product/presentation/manger/add_product_cubit/add_product_cubit.dart';
 import 'package:fruit_hub_dash_board/features/add_product/presentation/views/widgets/add_product_view_body.dart';
 
-class AddProductView extends StatefulWidget {
+/// Add a new product, or edit [product] when it is passed.
+class AddProductView extends StatelessWidget {
   static const String routeName = 'add_product';
-  const AddProductView({super.key});
+  const AddProductView({super.key, this.product});
 
-  @override
-  State<AddProductView> createState() => _AddProductViewState();
-}
+  final ProductEntity? product;
 
-class _AddProductViewState extends State<AddProductView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Add Product')),
-      body: BlocProvider(
-        create: (context) => AddProductCubit(
-          imageRepo: getIt<ImageRepo>(),
-          productRepo: getIt<ProductRepo>(),
+      backgroundColor: const Color(0xffF7F8F8),
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: const Color(0xffF7F8F8),
+        surfaceTintColor: Colors.transparent,
+        title: Text(
+          product == null ? 'إضافة منتج' : 'تعديل المنتج',
+          style: AppStyles.bodyLargeBold,
         ),
-
-        child: AddProductViewBody(),
+      ),
+      body: BlocProvider(
+        create: (_) => AddProductCubit(productRepo: getIt<ProductRepo>()),
+        child: AddProductViewBody(product: product),
       ),
     );
   }

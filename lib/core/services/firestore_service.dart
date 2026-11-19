@@ -2,9 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fruit_hub_dash_board/core/services/database_service.dart';
 
 class FirebaseFirestoreService implements DatabaseService {
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
   @override
-  addData({
+  Future<void> addData({
     required String path,
     required Map<String, dynamic> data,
     String? documentId,
@@ -12,28 +13,30 @@ class FirebaseFirestoreService implements DatabaseService {
     await firestore.collection(path).doc(documentId).set(data);
   }
 
-  // @override
-  // Future<UserEntity> getData({
-  //   required String path,
-  //   required String documentId,
-  // }) async {
-  //   DocumentSnapshot<Map<String, dynamic>> documentSnapshot = await firestore
-  //       .collection(path)
-  //       .doc(documentId)
-  //       .get();
-  //   if (!documentSnapshot.exists) {
-  //     throw Exception("User data not found");
-  //   }
-  //   return UserModel.fromJson(documentSnapshot.data()!);
-  // }
+  @override
+  Future<void> updateData({
+    required String path,
+    required String documentId,
+    required Map<String, dynamic> data,
+  }) async {
+    await firestore.collection(path).doc(documentId).update(data);
+  }
 
-  // @override
-  // Future<bool> checkIfDataExists({
-  //   required String path,
-  //   required String documentId,
-  // }) {
-  //   return firestore.collection(path).doc(documentId).get().then((doc) {
-  //     return doc.exists;
-  //   });
-  // }
+  @override
+  Future<void> deleteData({
+    required String path,
+    required String documentId,
+  }) async {
+    await firestore.collection(path).doc(documentId).delete();
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> getCollection({
+    required String path,
+  }) async {
+    final snapshot = await firestore.collection(path).get();
+    return snapshot.docs
+        .map((doc) => {...doc.data(), 'id': doc.data()['id'] ?? doc.id})
+        .toList();
+  }
 }
